@@ -9,7 +9,8 @@
     "build:action": "ncc build src/main.ts -o dist/action --source-map --license licenses.txt",
     "build:lib": "tsc --project tsconfig.lib.json",
     "package": "npm run build",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "tsx --test tests/**/*.test.ts",
+    "test:watch": "tsx --test --watch tests/**/*.test.ts"
   },
   "exports": {
     ".": {
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@types/node": "^20.10.0",
     "@vercel/ncc": "^0.38.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.3.3"
   },
   "repository": {
