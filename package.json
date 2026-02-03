@@ -1,20 +1,36 @@
 {
   "name": "codec-validator-action",
-  "version": "1.0.0",
-  "description": "GitHub Action to validate codec.json files",
+  "version": "2.0.0",
+  "description": "GitHub Action and npm package to validate codec.json files",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "ncc build src/main.ts -o dist --source-map --license licenses.txt",
+    "build": "npm run build:action && npm run build:lib",
+    "build:action": "ncc build src/main.ts -o dist/action --source-map --license licenses.txt",
+    "build:lib": "tsc --project tsconfig.lib.json",
     "package": "npm run build",
     "test": "echo \"No tests yet\" && exit 0"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/test/**/*",
+    "dist/utils/**/*"
+  ],
   "keywords": [
     "github-action",
     "codec",
     "validation",
-    "bacnet"
+    "bacnet",
+    "milesight"
   ],
-  "author": "Your Organization",
+  "author": "Milesight IoT",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.1",
@@ -24,5 +40,9 @@
     "@types/node": "^20.10.0",
     "@vercel/ncc": "^0.38.1",
     "typescript": "^5.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FengFuLiu/codec-validator-action.git"
   }
 }

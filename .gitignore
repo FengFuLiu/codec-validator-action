@@ -2,5 +2,5 @@ node_modules/
 lib/
 *.log
 
-# Don't ignore dist/ - GitHub Actions needs it!
+# Don't ignore dist/ - GitHub Actions and npm package need it!
 # dist/

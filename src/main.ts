@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CodecValidator } from './codec-validator';
+import { CodecValidator } from './test';
 
 async function run(): Promise<void> {
   try {
@@ -51,22 +51,27 @@ async function run(): Promise<void> {
     const result = validator.validateCodecJson(targetPath);
 
     // 输出结果
-    if (result.valid) {
+    if (result.valid && result.warnings.length === 0) {
       core.info('✅ codec.json 验证通过');
+      core.info('====================================\n');
+      core.setOutput('result', 'success');
+      core.setOutput('errors-count', '0');
+      core.setOutput('warnings-count', '0');
+    } else if (result.valid && result.warnings.length > 0) {
+      // 有警告但无错误
+      core.info('✅ codec.json 验证通过');
+      core.warning(`⚠️  发现 ${result.warnings.length} 个警告:`);
+      result.warnings.forEach((warning, index) => {
+        core.warning(`   ${index + 1}. ${warning}`);
+      });
 
-      if (result.warnings.length > 0) {
-        core.warning(`⚠️  发现 ${result.warnings.length} 个警告:`);
-        result.warnings.forEach((warning, index) => {
-          core.warning(`   ${index + 1}. ${warning}`);
-        });
-
-        if (failOnWarning) {
-          core.setFailed('验证失败: 发现警告且 fail-on-warning 已启用');
-          core.setOutput('result', 'failed');
-          core.setOutput('errors-count', '0');
-          core.setOutput('warnings-count', result.warnings.length.toString());
-          return;
-        }
+      if (failOnWarning) {
+        core.info('====================================\n');
+        core.setFailed('验证失败: 发现警告且 fail-on-warning 已启用');
+        core.setOutput('result', 'failed');
+        core.setOutput('errors-count', '0');
+        core.setOutput('warnings-count', result.warnings.length.toString());
+        return;
       }
 
       core.info('====================================\n');
@@ -74,6 +79,7 @@ async function run(): Promise<void> {
       core.setOutput('errors-count', '0');
       core.setOutput('warnings-count', result.warnings.length.toString());
     } else {
+      // 有错误
       if (result.errors.length > 0) {
         core.error('❌ codec.json 验证错误:');
         result.errors.forEach((error, index) => {

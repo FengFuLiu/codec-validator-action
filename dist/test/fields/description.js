@@ -1,0 +1,47 @@
+"use strict";
+/**
+ * Description 字段验证器
+ * 验证 description 字段的约束（云端准出表/网关准入表标准）
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DescriptionValidator = void 0;
+class DescriptionValidator {
+    /**
+     * 验证 description 字段约束
+     *
+     * 云端准出表/网关准入表标准：
+     * 1. 非必填
+     * 2. 数据类型：string
+     * 3. 数据范围：转换后字节长度为127以内
+     *
+     * @param item codec 对象
+     * @returns 验证结果
+     */
+    static validate(item) {
+        const { id, description } = item;
+        // 1. 非必填，如果不存在直接通过
+        if (!description) {
+            return { valid: true, id: null, message: null };
+        }
+        // 2. 数据类型检查
+        if (typeof description !== 'string') {
+            return {
+                valid: false,
+                id,
+                message: `description 必须是字符串类型, 得到 ${typeof description}`,
+            };
+        }
+        // 3. 字节长度检查（127 以内）
+        const byteLength = new TextEncoder().encode(description).length;
+        if (byteLength > 127) {
+            return {
+                valid: false,
+                id,
+                message: `description 字段长度超过 127 字节: ${byteLength} 字节`,
+            };
+        }
+        return { valid: true, id: null, message: null };
+    }
+}
+exports.DescriptionValidator = DescriptionValidator;
+//# sourceMappingURL=description.js.map

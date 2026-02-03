@@ -7,13 +7,39 @@ GitHub Action 用于验证 codec.json 文件是否符合 BACnet 规范和数据�
 
 ## ✨ 功能特性
 
-- ✅ 验证 `access_mode`、`data_type`、`bacnet_type` 等字段的组合规则
-- ✅ 检查 BACnet 单位定义（270+ 单位类型）
-- ✅ 验证字段引用完整性
-- ✅ 检查 `name` 字段长度（最大 64 字节）
-- ✅ 验证枚举值（`values` 数组）
+### 🔍 全面验证（18 种验证规则）
+
+#### 基础字段验证（14 种）
+- ✅ **ID 验证**：必填、唯一性、格式
+- ✅ **name 验证**：长度限制（≤64字节）
+- ✅ **description 验证**：必填性
+- ✅ **access_mode 验证**：枚举值检查
+- ✅ **data_type 验证**：枚举值检查
+- ✅ **value_type 验证**：枚举值检查
+- ✅ **bacnet_type 验证**：枚举值检查
+- ✅ **unit 验证**：格式、一致性
+- ✅ **bacnet_unit_type_id 验证**：存在于 270+ BACnet 单位定义中
+- ✅ **bacnet_unit_type 验证**：与 ID 匹配
+- ✅ **value 验证**：类型正确性
+- ✅ **values 验证**：数组长度（≥2）
+- ✅ **max_length 验证**：合法性
+- ✅ **reference 验证**：格式正确
+
+#### 关联性验证（4 种）
+- ✅ **access_mode + bacnet_type 组合**：符合 BACnet 规范
+- ✅ **data_type + bacnet_type 组合**：数据类型匹配
+- ✅ **data_type + value_type 组合**：值类型兼容
+- ✅ **单位三元组一致性**：unit、bacnet_unit_type_id、bacnet_unit_type 三者一致
+
+### 🏗️ 模块化架构
+- ✅ 18 个独立验证器模块，职责单一
+- ✅ 易于扩展和维护
+- ✅ 清晰的错误提示定位
+
+### ⚙️ 灵活配置
 - ✅ 支持自动查找或指定 codec.json 路径
 - ✅ 区分错误和警告，可配置失败策略
+- ✅ 详细的验证输出和统计信息
 
 ## 📦 使用方法
 

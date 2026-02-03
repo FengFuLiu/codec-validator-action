@@ -1,0 +1,1 @@
+{"version":3,"file":"reference-validator.d.ts","sourceRoot":"","sources":["../../../src/test/relationships/reference-validator.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAEH,OAAO,EAAE,gBAAgB,EAAE,WAAW,EAAE,MAAM,UAAU,CAAC;AAEzD,qBAAa,kBAAkB;IAC9B;;;;;OAKG;IACH,MAAM,CAAC,QAAQ,CAAC,IAAI,EAAE,WAAW,EAAE,QAAQ,EAAE,WAAW,EAAE,GAAG,gBAAgB;CAkB7E"}

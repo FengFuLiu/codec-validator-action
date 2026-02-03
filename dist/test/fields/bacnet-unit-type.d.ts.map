@@ -1,0 +1,1 @@
+{"version":3,"file":"bacnet-unit-type.d.ts","sourceRoot":"","sources":["../../../src/test/fields/bacnet-unit-type.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAEH,OAAO,EAAE,gBAAgB,EAAE,WAAW,EAAE,MAAM,UAAU,CAAC;AAEzD,qBAAa,uBAAuB;IACnC;;;;;;;;;;OAUG;IACH,MAAM,CAAC,QAAQ,CAAC,IAAI,EAAE,WAAW,GAAG,gBAAgB;CA6BpD"}
