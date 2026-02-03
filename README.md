@@ -38,6 +38,23 @@ const result = await validateCodec('./codec.json');
 | `codec-path` | 自动检测 | codec.json 路径 |
 | `fail-on-warning` | `false` | 警告时是否失败 |
 
+## 📊 验证报告
+
+每次运行后，Action 会自动生成详细的验证报告，显示在 GitHub Actions 的 Summary 页面：
+
+**报告内容包括：**
+- ✅ 验证状态（通过/失败）
+- 📦 对象数量统计
+- ❌ 错误详情列表
+- ⚠️  警告详情列表
+
+**查看报告：**
+1. 进入 GitHub Actions 运行页面
+2. 点击具体的 workflow 运行记录
+3. 在页面顶部可以看到完整的验证报告
+
+![验证报告示例](https://via.placeholder.com/600x300?text=Validation+Report+Example)
+
 ## 🛠️ 本地开发
 
 ### 环境要求

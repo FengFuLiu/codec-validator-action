@@ -25686,6 +25686,61 @@ const core = __importStar(__nccwpck_require__(7484));
 const fs = __importStar(__nccwpck_require__(9896));
 const path = __importStar(__nccwpck_require__(6928));
 const test_1 = __nccwpck_require__(3204);
+/**
+ * 生成验证报告
+ */
+async function generateReport(targetPath, result, objectCount = 0) {
+    const fileName = path.basename(targetPath);
+    const totalIssues = result.errors.length + result.warnings.length;
+    // 创建 Summary（在 GitHub Actions 中显示）
+    await core.summary
+        .addHeading('Codec.json 验证报告', 1)
+        .addRaw('\n')
+        .addHeading('📊 验证结果', 2)
+        .addTable([
+        [
+            { data: '项目', header: true },
+            { data: '值', header: true },
+        ],
+        ['📄 文件名', fileName],
+        ['📦 对象数量', objectCount.toString()],
+        ['✅ 验证状态', result.valid ? '✅ 通过' : '❌ 失败'],
+        ['❌ 错误数', result.errors.length.toString()],
+        ['⚠️  警告数', result.warnings.length.toString()],
+    ])
+        .addRaw('\n');
+    // 添加错误详情
+    if (result.errors.length > 0) {
+        core.summary.addHeading(`❌ 错误详情 (${result.errors.length})`, 2);
+        core.summary.addList(result.errors);
+        core.summary.addRaw('\n');
+    }
+    // 添加警告详情
+    if (result.warnings.length > 0) {
+        core.summary.addHeading(`⚠️ 警告详情 (${result.warnings.length})`, 2);
+        core.summary.addList(result.warnings);
+        core.summary.addRaw('\n');
+    }
+    // 添加成功消息
+    if (result.valid && totalIssues === 0) {
+        core.summary
+            .addHeading('✨ 验证成功', 2)
+            .addQuote(`成功验证 ${objectCount} 个对象，所有验证规则均已通过，未发现任何问题。`)
+            .addRaw('\n');
+    }
+    else if (!result.valid) {
+        core.summary
+            .addHeading('❌ 验证失败', 2)
+            .addQuote(`验证 ${objectCount} 个对象时发现 ${result.errors.length} 个错误，${result.warnings.length} 个警告。请检查上述问题并修复。`)
+            .addRaw('\n');
+    }
+    // 添加页脚
+    core.summary
+        .addRaw('\n---\n')
+        .addRaw('<sub>由 [Codec Validator Action](https://github.com/FengFuLiu/codec-validator-action) 生成 | 支持 18 种验证规则</sub>');
+    // 写入 summary
+    await core.summary.write();
+}
 async function run() {
     try {
         // 获取输入参数
@@ -25723,9 +25778,24 @@ async function run() {
         core.info(`\n========== Codec.json 验证 ==========`);
         core.info(`📄 验证文件: ${path.basename(targetPath)}`);
         core.info(`📂 完整路径: ${targetPath}\n`);
+        // 读取文件获取对象数量
+        let objectCount = 0;
+        try {
+            const content = fs.readFileSync(targetPath, 'utf8');
+            const json = JSON.parse(content);
+            if (json.object && Array.isArray(json.object)) {
+                objectCount = json.object.length;
+                core.info(`📦 对象数量: ${objectCount}\n`);
+            }
+        }
+        catch (error) {
+            // 如果读取失败，继续验证，让验证器报告错误
+        }
         // 执行验证
         const validator = new test_1.CodecValidator();
         const result = validator.validateCodecJson(targetPath);
+        // 生成验证报告
+        await generateReport(targetPath, result, objectCount);
         // 输出结果
         if (result.valid && result.warnings.length === 0) {
             core.info('✅ codec.json 验证通过');
