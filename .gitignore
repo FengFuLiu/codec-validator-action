@@ -1,0 +1,6 @@
+node_modules/
+lib/
+*.log
+
+# Don't ignore dist/ - GitHub Actions needs it!
+# dist/

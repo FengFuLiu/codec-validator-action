@@ -1,0 +1,29 @@
+name: 'Codec JSON Validator'
+description: 'Validate codec.json files against BACnet specification and data type rules'
+author: 'Your Organization'
+
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  codec-path:
+    description: 'Path to codec.json file (default: auto-detect in current directory)'
+    required: false
+    default: ''
+  fail-on-warning:
+    description: 'Fail the action if warnings are found (default: false)'
+    required: false
+    default: 'false'
+
+outputs:
+  result:
+    description: 'Validation result (success/failed)'
+  errors-count:
+    description: 'Number of errors found'
+  warnings-count:
+    description: 'Number of warnings found'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

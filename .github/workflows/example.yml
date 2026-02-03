@@ -1,0 +1,67 @@
+# 使用示例 - 在其他项目中如何使用此 Action
+
+name: Example - Validate Codec
+
+on:
+  push:
+    paths:
+      - '**/*codec.json'
+  pull_request:
+    paths:
+      - '**/*codec.json'
+
+jobs:
+  # 示例 1: 基础用法
+  basic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: your-org/codec-validator-action@v1
+
+  # 示例 2: 指定文件路径
+  with-path:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: your-org/codec-validator-action@v1
+        with:
+          codec-path: './path/to/codec.json'
+
+  # 示例 3: 警告也视为失败
+  strict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: your-org/codec-validator-action@v1
+        with:
+          fail-on-warning: 'true'
+
+  # 示例 4: 使用输出
+  with-outputs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate
+        id: validate
+        uses: your-org/codec-validator-action@v1
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ steps.validate.outputs.result }}';
+            const errors = '${{ steps.validate.outputs.errors-count }}';
+            const warnings = '${{ steps.validate.outputs.warnings-count }}';
+
+            const body = result === 'success'
+              ? `✅ codec.json 验证通过！\n\n警告: ${warnings} 个`
+              : `❌ codec.json 验证失败\n\n错误: ${errors} 个\n警告: ${warnings} 个`;
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
