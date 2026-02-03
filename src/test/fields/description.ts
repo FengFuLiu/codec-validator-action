@@ -12,7 +12,7 @@ export class DescriptionValidator {
 	 * 云端准出表/网关准入表标准：
 	 * 1. 非必填
 	 * 2. 数据类型：string
-	 * 3. 数据范围：转换后字节长度为127以内
+	 * 3. 数据范围：转换后字节长度为1024以内
 	 *
 	 * @param item codec 对象
 	 * @returns 验证结果
@@ -34,13 +34,13 @@ export class DescriptionValidator {
 			};
 		}
 
-		// 3. 字节长度检查（127 以内）
+		// 3. 字节长度检查（1024 以内）
 		const byteLength = new TextEncoder().encode(description).length;
-		if (byteLength > 127) {
+		if (byteLength > 1024) {
 			return {
 				valid: false,
 				id,
-				message: `description 字段长度超过 127 字节: ${byteLength} 字节`,
+				message: `description 字段长度超过 1024 字节: ${byteLength} 字节`,
 			};
 		}
 

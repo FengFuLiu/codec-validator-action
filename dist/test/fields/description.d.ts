@@ -10,7 +10,7 @@ export declare class DescriptionValidator {
      * 云端准出表/网关准入表标准：
      * 1. 非必填
      * 2. 数据类型：string
-     * 3. 数据范围：转换后字节长度为127以内
+     * 3. 数据范围：转换后字节长度为1024以内
      *
      * @param item codec 对象
      * @returns 验证结果
