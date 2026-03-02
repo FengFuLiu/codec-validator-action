@@ -178,6 +178,18 @@ git commit -m "chore: update dist"
 
 **重要**：`dist/` 目录必须提交到 Git，因为 GitHub Actions 运行时直接使用编译后的代码。
 
+### 本地验证
+
+项目提供了本地验证脚本，可直接验证指定的 codec.json 文件：
+
+```bash
+# 验证默认示例文件 (examples/codec.json)
+npx tsx examples/validate.ts
+
+# 验证指定路径的文件
+npx tsx examples/validate.ts /path/to/your/codec.json
+```
+
 ### 测试
 
 项目包含全面的测试套件，覆盖所有验证器：
@@ -258,6 +270,9 @@ codec-validator-action/
 │   │   ├── fields/          # 字段验证器（13 个）
 │   │   └── relationships/   # 关联验证器（4 个）
 │   └── utils/               # 工具函数
+├── examples/               # 本地验证示例
+│   ├── codec.json          # 示例 codec.json 文件
+│   └── validate.ts         # 本地验证脚本
 ├── tests/                   # 测试文件
 │   ├── fields/              # 字段验证器测试
 │   ├── relationships/       # 关联验证器测试
