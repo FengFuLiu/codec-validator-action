@@ -4,6 +4,7 @@
  */
 
 export { CodecValidator } from './test';
+export { validateItem } from './test/validate';
 export type { CodecJson, CodecObject, ValidationResult } from './test/types';
 export { bacnet_units_def } from './utils/bacnet-units';
 export type { BacnetUnitDef } from './utils/bacnet-units';

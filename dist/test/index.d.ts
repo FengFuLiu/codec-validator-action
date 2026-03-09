@@ -13,12 +13,6 @@ export declare class CodecValidator {
         errors: string[];
         warnings: string[];
     };
-    /**
-     * 验证单个 codec 对象
-     * @param item codec 对象
-     * @param allItems 所有 codec 对象
-     * @returns 验证结果列表
-     */
     private validateItem;
     /**
      * 验证测试数据中的字段ID是否在codec.json中定义

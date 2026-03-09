@@ -26862,25 +26862,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CodecValidator = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(9896));
-// 关联性验证器
-const access_mode_validator_1 = __nccwpck_require__(9169);
-const data_type_validator_1 = __nccwpck_require__(8604);
-const unit_validator_1 = __nccwpck_require__(7351);
-const reference_validator_1 = __nccwpck_require__(1390);
-// 基础字段验证器
-const id_1 = __nccwpck_require__(7095);
-const description_1 = __nccwpck_require__(9678);
-const name_1 = __nccwpck_require__(7897);
-const access_mode_1 = __nccwpck_require__(6502);
-const data_type_1 = __nccwpck_require__(4171);
-const value_type_1 = __nccwpck_require__(3734);
-const value_1 = __nccwpck_require__(9137);
-const max_length_1 = __nccwpck_require__(7631);
-const unit_1 = __nccwpck_require__(2368);
-const bacnet_type_1 = __nccwpck_require__(6716);
-const bacnet_unit_type_id_1 = __nccwpck_require__(3893);
-const bacnet_unit_type_1 = __nccwpck_require__(7071);
-const reference_1 = __nccwpck_require__(7081);
+const validate_1 = __nccwpck_require__(5008);
 class CodecValidator {
     /**
      * 验证 codec.json 文件
@@ -26937,39 +26919,8 @@ class CodecValidator {
             };
         }
     }
-    /**
-     * 验证单个 codec 对象
-     * @param item codec 对象
-     * @param allItems 所有 codec 对象
-     * @returns 验证结果列表
-     */
     validateItem(item, allItems) {
-        const validations = [
-            // 云端准出表/网关准入表 - 基础字段验证
-            { ...id_1.IdValidator.validate(item), severity: 'error' },
-            { ...id_1.IdValidator.validateUnique(item, allItems), severity: 'error' },
-            { ...description_1.DescriptionValidator.validate(item), severity: 'error' },
-            { ...name_1.NameValidator.validate(item), severity: 'error' },
-            { ...access_mode_1.AccessModeFieldValidator.validate(item), severity: 'error' },
-            { ...data_type_1.DataTypeFieldValidator.validate(item), severity: 'error' },
-            { ...value_type_1.ValueTypeFieldValidator.validate(item), severity: 'error' },
-            { ...value_1.ValueValidator.validate(item), severity: 'error' },
-            { ...value_1.ValueValidator.validateValues(item), severity: 'error' },
-            { ...max_length_1.MaxLengthValidator.validate(item), severity: 'error' },
-            { ...unit_1.UnitFieldValidator.validate(item), severity: 'error' },
-            { ...unit_1.UnitFieldValidator.validateUnitConsistency(item), severity: 'error' },
-            { ...bacnet_type_1.BacnetTypeFieldValidator.validate(item), severity: 'error' },
-            { ...bacnet_unit_type_id_1.BacnetUnitTypeIdValidator.validate(item), severity: 'error' },
-            { ...bacnet_unit_type_1.BacnetUnitTypeValidator.validate(item), severity: 'error' },
-            { ...reference_1.ReferenceFieldValidator.validate(item), severity: 'error' },
-            // 关联性验证（字段组合关系）
-            { ...access_mode_validator_1.AccessModeValidator.validate(item), severity: 'error' },
-            { ...data_type_validator_1.DataTypeValidator.validateBacnetType(item), severity: 'error' },
-            { ...data_type_validator_1.DataTypeValidator.validateValueType(item), severity: 'error' },
-            { ...unit_validator_1.UnitValidator.validate(item), severity: 'error' },
-            { ...reference_validator_1.ReferenceValidator.validate(item, allItems), severity: 'error' },
-        ];
-        return validations.filter(result => !result.valid);
+        return (0, validate_1.validateItem)(item, allItems);
     }
     /**
      * 验证测试数据中的字段ID是否在codec.json中定义
@@ -27268,6 +27219,67 @@ class UnitValidator {
     }
 }
 exports.UnitValidator = UnitValidator;
+
+
+/***/ }),
+
+/***/ 5008:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.validateItem = validateItem;
+// 关联性验证器
+const access_mode_validator_1 = __nccwpck_require__(9169);
+const data_type_validator_1 = __nccwpck_require__(8604);
+const unit_validator_1 = __nccwpck_require__(7351);
+const reference_validator_1 = __nccwpck_require__(1390);
+// 基础字段验证器
+const id_1 = __nccwpck_require__(7095);
+const description_1 = __nccwpck_require__(9678);
+const name_1 = __nccwpck_require__(7897);
+const access_mode_1 = __nccwpck_require__(6502);
+const data_type_1 = __nccwpck_require__(4171);
+const value_type_1 = __nccwpck_require__(3734);
+const value_1 = __nccwpck_require__(9137);
+const max_length_1 = __nccwpck_require__(7631);
+const unit_1 = __nccwpck_require__(2368);
+const bacnet_type_1 = __nccwpck_require__(6716);
+const bacnet_unit_type_id_1 = __nccwpck_require__(3893);
+const bacnet_unit_type_1 = __nccwpck_require__(7071);
+const reference_1 = __nccwpck_require__(7081);
+/**
+ * 验证单个 codec 对象（纯函数，不依赖 fs）
+ */
+function validateItem(item, allItems) {
+    const validations = [
+        // 云端准出表/网关准入表 - 基础字段验证
+        { ...id_1.IdValidator.validate(item), severity: 'error' },
+        { ...id_1.IdValidator.validateUnique(item, allItems), severity: 'error' },
+        { ...description_1.DescriptionValidator.validate(item), severity: 'error' },
+        { ...name_1.NameValidator.validate(item), severity: 'error' },
+        { ...access_mode_1.AccessModeFieldValidator.validate(item), severity: 'error' },
+        { ...data_type_1.DataTypeFieldValidator.validate(item), severity: 'error' },
+        { ...value_type_1.ValueTypeFieldValidator.validate(item), severity: 'error' },
+        { ...value_1.ValueValidator.validate(item), severity: 'error' },
+        { ...value_1.ValueValidator.validateValues(item), severity: 'error' },
+        { ...max_length_1.MaxLengthValidator.validate(item), severity: 'error' },
+        { ...unit_1.UnitFieldValidator.validate(item), severity: 'error' },
+        { ...unit_1.UnitFieldValidator.validateUnitConsistency(item), severity: 'error' },
+        { ...bacnet_type_1.BacnetTypeFieldValidator.validate(item), severity: 'error' },
+        { ...bacnet_unit_type_id_1.BacnetUnitTypeIdValidator.validate(item), severity: 'error' },
+        { ...bacnet_unit_type_1.BacnetUnitTypeValidator.validate(item), severity: 'error' },
+        { ...reference_1.ReferenceFieldValidator.validate(item), severity: 'error' },
+        // 关联性验证（字段组合关系）
+        { ...access_mode_validator_1.AccessModeValidator.validate(item), severity: 'error' },
+        { ...data_type_validator_1.DataTypeValidator.validateBacnetType(item), severity: 'error' },
+        { ...data_type_validator_1.DataTypeValidator.validateValueType(item), severity: 'error' },
+        { ...unit_validator_1.UnitValidator.validate(item), severity: 'error' },
+        { ...reference_validator_1.ReferenceValidator.validate(item, allItems), severity: 'error' },
+    ];
+    return validations.filter(result => !result.valid);
+}
 
 
 /***/ }),
