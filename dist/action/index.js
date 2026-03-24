@@ -27462,7 +27462,7 @@ function validateItem(item, allItems) {
         { ...id_1.IdValidator.validateUnique(item, allItems), severity: 'error' },
         { ...description_1.DescriptionValidator.validate(item), severity: 'error' },
         { ...name_1.NameValidator.validate(item), severity: 'error' },
-        { ...name_1.NameValidator.validateUnique(item, allItems), severity: 'error' },
+        // { ...NameValidator.validateUnique(item, allItems), severity: 'error' as const },
         { ...access_mode_1.AccessModeFieldValidator.validate(item), severity: 'error' },
         { ...data_type_1.DataTypeFieldValidator.validate(item), severity: 'error' },
         { ...value_type_1.ValueTypeFieldValidator.validate(item), severity: 'error' },
