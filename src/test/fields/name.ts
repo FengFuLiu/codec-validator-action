@@ -7,12 +7,37 @@ import { ValidationResult, CodecObject } from '../types';
 
 export class NameValidator {
 	/**
+	 * 验证 name 字段不可重复
+	 * @param item codec 对象
+	 * @param allItems 所有 codec 对象
+	 * @returns 验证结果
+	 */
+	static validateUnique(item: CodecObject, allItems: CodecObject[]): ValidationResult {
+		const { id, name } = item;
+
+		if (!name) {
+			return { valid: true, id: null, message: null };
+		}
+
+		const duplicates = allItems.filter(obj => obj.name === name);
+		if (duplicates.length > 1) {
+			return {
+				valid: false,
+				id,
+				message: `name "${name}" 重复出现 ${duplicates.length} 次`,
+			};
+		}
+
+		return { valid: true, id: null, message: null };
+	}
+
+	/**
 	 * 验证 name 字段约束
 	 *
 	 * 云端准出表/网关准入表标准：
 	 * 1. 非必填
 	 * 2. 数据类型：string
-	 * 3. 数据范围：转换后字节长度为64以内
+	 * 3. 数据范围：转换后字节长度为128以内
 	 *
 	 * @param item codec 对象
 	 * @returns 验证结果
@@ -34,13 +59,13 @@ export class NameValidator {
 			};
 		}
 
-		// 3. 字节长度检查（64 以内）
+		// 3. 字节长度检查（128 以内）
 		const byteLength = new TextEncoder().encode(name).length;
-		if (byteLength > 64) {
+		if (byteLength > 128) {
 			return {
 				valid: false,
 				id,
-				message: `name 字段长度超过 64 字节: ${byteLength} 字节`,
+				message: `name 字段长度超过 128 字节: ${byteLength} 字节`,
 			};
 		}
 

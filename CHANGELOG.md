@@ -62,7 +62,7 @@ src/
 | 验证器 | 功能 |
 |--------|------|
 | IdValidator | 验证 ID 必填、唯一性 |
-| NameValidator | 验证 name 字段长度（≤64字节） |
+| NameValidator | 验证 name 字段长度（≤128字节） |
 | DescriptionValidator | 验证 description 必填 |
 | AccessModeFieldValidator | 验证 access_mode 枚举值 |
 | DataTypeFieldValidator | 验证 data_type 枚举值 |

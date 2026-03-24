@@ -1,6 +1,6 @@
 # Codec JSON Validator Action
 
-GitHub Action 和 npm 包，用于验证 codec.json 文件是否符合 BACnet 规范和数据类型规则。支持 18 种验证规则，包括基础字段验证和关联性验证。
+GitHub Action 和 npm 包，用于验证 codec.json 文件是否符合 BACnet 规范和数据类型规则。支持 18 类验证规则（当前入口暂不启用 `name` 重复校验），包括基础字段验证和关联性验证。
 
 ## 📦 快速开始
 
@@ -229,14 +229,14 @@ git push origin main
 
 ## 🔍 验证规则
 
-本工具实现了 **18 种验证规则**，确保 codec.json 符合 BACnet 云端准出表/网关准入表标准：
+本工具实现了 **18 类验证规则**，确保 codec.json 符合 BACnet 云端准出表/网关准入表标准（当前入口暂不启用 `name` 重复校验）：
 
-### 字段验证（13 种）
+### 字段验证（14 种）
 
 | 字段 | 验证内容 |
 |------|----------|
 | `id` | 必填、唯一性、小写格式、长度≤127字节、不支持数组索引 |
-| `name` | 字符串类型、长度≤64字节 |
+| `name` | 字符串类型、长度≤128字节（暂不校验全局重复） |
 | `description` | 字符串类型、长度≤1024字节 |
 | `access_mode` | 枚举值（R/W/RW） |
 | `data_type` | 枚举值（BOOL/NUMBER/ENUM/STRING） |

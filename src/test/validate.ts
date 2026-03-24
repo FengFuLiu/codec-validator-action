@@ -31,6 +31,7 @@ export function validateItem(item: CodecObject, allItems: CodecObject[]): Valida
 		{ ...IdValidator.validateUnique(item, allItems), severity: 'error' as const },
 		{ ...DescriptionValidator.validate(item), severity: 'error' as const },
 		{ ...NameValidator.validate(item), severity: 'error' as const },
+		// { ...NameValidator.validateUnique(item, allItems), severity: 'error' as const },
 		{ ...AccessModeFieldValidator.validate(item), severity: 'error' as const },
 		{ ...DataTypeFieldValidator.validate(item), severity: 'error' as const },
 		{ ...ValueTypeFieldValidator.validate(item), severity: 'error' as const },

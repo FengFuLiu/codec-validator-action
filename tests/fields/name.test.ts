@@ -8,7 +8,6 @@ import { NameValidator } from '../../src/test/fields/name';
 import {
 	createTestCodecObject,
 	generateStringWithByteLength,
-	generateMultiByteString,
 } from '../helpers';
 
 describe('NameValidator', () => {
@@ -63,73 +62,124 @@ describe('NameValidator', () => {
 	});
 
 	describe('字节长度验证', () => {
-		test('64 字节的 name 应通过验证', () => {
-			const item = createTestCodecObject({
-				name: generateStringWithByteLength(64),
-			});
-			const result = NameValidator.validate(item);
-
-			assert.strictEqual(result.valid, true);
-		});
-
-		test('63 字节的 name 应通过验证', () => {
-			const item = createTestCodecObject({
-				name: generateStringWithByteLength(63),
-			});
-			const result = NameValidator.validate(item);
-
-			assert.strictEqual(result.valid, true);
-		});
-
-		test('65 字节的 name 应失败', () => {
-			const item = createTestCodecObject({
-				name: generateStringWithByteLength(65),
-			});
-			const result = NameValidator.validate(item);
-
-			assert.strictEqual(result.valid, false);
-			assert.strictEqual(result.id, 'test_id');
-			assert.match(result.message!, /name 字段长度超过 64 字节: 65 字节/);
-		});
-
-		test('128 字节的 name 应失败', () => {
+		test('128 字节的 name 应通过验证', () => {
 			const item = createTestCodecObject({
 				name: generateStringWithByteLength(128),
 			});
 			const result = NameValidator.validate(item);
 
+			assert.strictEqual(result.valid, true);
+		});
+
+		test('127 字节的 name 应通过验证', () => {
+			const item = createTestCodecObject({
+				name: generateStringWithByteLength(127),
+			});
+			const result = NameValidator.validate(item);
+
+			assert.strictEqual(result.valid, true);
+		});
+
+		test('129 字节的 name 应失败', () => {
+			const item = createTestCodecObject({
+				name: generateStringWithByteLength(129),
+			});
+			const result = NameValidator.validate(item);
+
 			assert.strictEqual(result.valid, false);
-			assert.match(result.message!, /name 字段长度超过 64 字节/);
+			assert.strictEqual(result.id, 'test_id');
+			assert.match(result.message!, /name 字段长度超过 128 字节: 129 字节/);
+		});
+
+		test('200 字节的 name 应失败', () => {
+			const item = createTestCodecObject({
+				name: generateStringWithByteLength(200),
+			});
+			const result = NameValidator.validate(item);
+
+			assert.strictEqual(result.valid, false);
+			assert.match(result.message!, /name 字段长度超过 128 字节/);
 		});
 	});
 
 	describe('多字节字符处理', () => {
 		test('包含中文字符的 name 应正确计算字节长度', () => {
 			// "中" 字符是 3 字节
-			// 21 个中文字符 = 63 字节（通过）
+			// 42 个中文字符 = 126 字节（通过）
 			const item1 = createTestCodecObject({
-				name: '中'.repeat(21),
+				name: '中'.repeat(42),
 			});
 			const result1 = NameValidator.validate(item1);
 			assert.strictEqual(result1.valid, true);
 
-			// 22 个中文字符 = 66 字节（失败）
+			// 43 个中文字符 = 129 字节（失败）
 			const item2 = createTestCodecObject({
-				name: '中'.repeat(22),
+				name: '中'.repeat(43),
 			});
 			const result2 = NameValidator.validate(item2);
 			assert.strictEqual(result2.valid, false);
 		});
 
 		test('混合 ASCII 和中文应正确计算', () => {
-			// 32 个 ASCII + 11 个中文 = 32 + 33 = 65 字节
+			// 30 个 ASCII + 33 个中文 = 30 + 99 = 129 字节
 			const item = createTestCodecObject({
-				name: 'a'.repeat(32) + '中'.repeat(11),
+				name: 'a'.repeat(30) + '中'.repeat(33),
 			});
 
 			const result = NameValidator.validate(item);
 			assert.strictEqual(result.valid, false);
-			assert.match(result.message!, /name 字段长度超过 64 字节: 65 字节/);
+			assert.match(result.message!, /name 字段长度超过 128 字节: 129 字节/);
+		});
+	});
+
+	describe('name 重复性验证', () => {
+		test('name 唯一时应通过验证', () => {
+			const item1 = createTestCodecObject({ id: 'id_1', name: 'Temperature' });
+			const item2 = createTestCodecObject({ id: 'id_2', name: 'Humidity' });
+			const allItems = [item1, item2];
+
+			const result = NameValidator.validateUnique(item1, allItems);
+			assert.strictEqual(result.valid, true);
+		});
+
+		test('name 重复时应失败', () => {
+			const item1 = createTestCodecObject({ id: 'id_1', name: 'Temperature' });
+			const item2 = createTestCodecObject({ id: 'id_2', name: 'Temperature' });
+			const allItems = [item1, item2];
+
+			const result = NameValidator.validateUnique(item1, allItems);
+			assert.strictEqual(result.valid, false);
+			assert.strictEqual(result.id, 'id_1');
+			assert.match(result.message!, /name "Temperature" 重复出现 2 次/);
+		});
+
+		test('name 重复 3 次时应失败并显示正确次数', () => {
+			const item1 = createTestCodecObject({ id: 'id_1', name: 'Temperature' });
+			const item2 = createTestCodecObject({ id: 'id_2', name: 'Temperature' });
+			const item3 = createTestCodecObject({ id: 'id_3', name: 'Temperature' });
+			const allItems = [item1, item2, item3];
+
+			const result = NameValidator.validateUnique(item1, allItems);
+			assert.strictEqual(result.valid, false);
+			assert.match(result.message!, /name "Temperature" 重复出现 3 次/);
+		});
+
+		test('name 为空时应跳过重复性验证', () => {
+			const item1 = createTestCodecObject({ id: 'id_1', name: '' });
+			const item2 = createTestCodecObject({ id: 'id_2', name: '' });
+			const allItems = [item1, item2];
+
+			const result = NameValidator.validateUnique(item1, allItems);
+			assert.strictEqual(result.valid, true);
+		});
+
+		test('name 为 undefined 时应跳过重复性验证', () => {
+			const item1 = createTestCodecObject({ id: 'id_1', name: undefined });
+			const item2 = createTestCodecObject({ id: 'id_2', name: undefined });
+			const allItems = [item1, item2];
+
+			const result = NameValidator.validateUnique(item1, allItems);
+			assert.strictEqual(result.valid, true);
 		});
 	});
 
