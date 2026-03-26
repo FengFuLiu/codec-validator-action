@@ -1,6 +1,6 @@
 {
   "name": "codec-validator-action",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "GitHub Action and npm package to validate codec.json files",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
