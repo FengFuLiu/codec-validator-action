@@ -74,9 +74,10 @@ class CodecValidator {
      * 验证测试数据中的字段ID是否在codec.json中定义
      * @param testJsonData 测试数据
      * @param codecJsonPath codec.json 文件路径
+     * @param options 可选校验参数
      * @returns 验证结果
      */
-    validateTestDataAgainstCodec(testJsonData, codecJsonPath) {
+    validateTestDataAgainstCodec(testJsonData, codecJsonPath, options) {
         const errors = [];
         const stats = this.createEmptyTestDataValidationStats();
         this.lastTestDataValidationStats = stats;
@@ -102,6 +103,7 @@ class CodecValidator {
             const flatData = this.flattenObject(testJsonData);
             const checkedKeys = new Set();
             const definedIdList = Array.from(definedIds);
+            const ignoreRowIdSet = this.buildIgnoreRowIdSet(options?.ignoreRowPropertyIds);
             for (const key in flatData) {
                 if (key === 'frame') {
                     stats.skippedFrame++;
@@ -137,12 +139,20 @@ class CodecValidator {
                     stats.skippedRelatedTypeAlias++;
                     continue;
                 }
+                if (this.shouldSkipByRelatedAliasMap(key, definedIds, options?.relatedAliasMap)) {
+                    stats.skippedRelatedCanonicalAlias++;
+                    continue;
+                }
                 if (this.isRelatedCanonicalAliasField(key, definedIds)) {
                     stats.skippedRelatedCanonicalAlias++;
                     continue;
                 }
                 if (this.shouldSkipTemperatureUnitAliasField(key, wildcardKey, definedIds)) {
                     stats.skippedRelatedCanonicalAlias++;
+                    continue;
+                }
+                if (this.shouldSkipByIgnoreRow(key, wildcardKey, ignoreRowIdSet)) {
+                    stats.skippedIgnoreRow++;
                     continue;
                 }
                 const reason = this.categorizeUndefinedReason(key, wildcardKey, definedIdList);
@@ -183,6 +193,7 @@ class CodecValidator {
             skippedReserve: 0,
             skippedRelatedTypeAlias: 0,
             skippedRelatedCanonicalAlias: 0,
+            skippedIgnoreRow: 0,
             errorReasonCount: {},
         };
     }
@@ -198,6 +209,55 @@ class CodecValidator {
             return false;
         }
         return definedIds.has(`${parentId}_types`);
+    }
+    shouldSkipByRelatedAliasMap(key, definedIds, relatedAliasMap) {
+        if (!relatedAliasMap) {
+            return false;
+        }
+        const canonicalId = relatedAliasMap[key];
+        if (!canonicalId) {
+            return false;
+        }
+        return definedIds.has(canonicalId);
+    }
+    buildIgnoreRowIdSet(ignoreRowPropertyIds) {
+        if (!ignoreRowPropertyIds || ignoreRowPropertyIds.length === 0) {
+            return new Set();
+        }
+        return new Set(ignoreRowPropertyIds
+            .map((id) => String(id || '').trim())
+            .filter(Boolean));
+    }
+    shouldSkipByIgnoreRow(key, wildcardKey, ignoreRowIdSet) {
+        if (ignoreRowIdSet.size === 0) {
+            return false;
+        }
+        return this.matchesIgnoreRowSet(key, ignoreRowIdSet) || this.matchesIgnoreRowSet(wildcardKey, ignoreRowIdSet);
+    }
+    matchesIgnoreRowSet(fieldId, ignoreRowIdSet) {
+        const normalizedFieldId = this.normalizeTemperatureUnitAlias(fieldId);
+        if (ignoreRowIdSet.has(fieldId) || ignoreRowIdSet.has(normalizedFieldId)) {
+            return true;
+        }
+        for (const ignoredId of ignoreRowIdSet) {
+            if (fieldId.startsWith(`${ignoredId}.`) || normalizedFieldId.startsWith(`${ignoredId}.`)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    normalizeTemperatureUnitAlias(fieldId) {
+        const parts = fieldId.split('.');
+        if (parts.length === 0) {
+            return fieldId;
+        }
+        const leaf = parts[parts.length - 1];
+        const normalizedLeaf = this.stripTemperatureUnitPrefix(leaf);
+        if (normalizedLeaf === leaf) {
+            return fieldId;
+        }
+        parts[parts.length - 1] = normalizedLeaf;
+        return parts.join('.');
     }
     /**
      * 识别 humidity/temperature/saltation 这类 leaf 字段被标准顶层字段覆盖的场景

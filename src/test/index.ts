@@ -17,7 +17,13 @@ interface TestDataValidationStats {
 	skippedReserve: number;
 	skippedRelatedTypeAlias: number;
 	skippedRelatedCanonicalAlias: number;
+	skippedIgnoreRow: number;
 	errorReasonCount: Record<string, number>;
+}
+
+export interface ValidateTestDataAgainstCodecOptions {
+	relatedAliasMap?: Record<string, string>;
+	ignoreRowPropertyIds?: string[];
 }
 
 export class CodecValidator {
@@ -90,9 +96,14 @@ export class CodecValidator {
 	 * 验证测试数据中的字段ID是否在codec.json中定义
 	 * @param testJsonData 测试数据
 	 * @param codecJsonPath codec.json 文件路径
+	 * @param options 可选校验参数
 	 * @returns 验证结果
 	 */
-	validateTestDataAgainstCodec(testJsonData: Record<string, any>, codecJsonPath: string): { valid: boolean; errors: string[] } {
+	validateTestDataAgainstCodec(
+		testJsonData: Record<string, any>,
+		codecJsonPath: string,
+		options?: ValidateTestDataAgainstCodecOptions
+	): { valid: boolean; errors: string[] } {
 		const errors: string[] = [];
 		const stats = this.createEmptyTestDataValidationStats();
 		this.lastTestDataValidationStats = stats;
@@ -123,6 +134,7 @@ export class CodecValidator {
 			const flatData = this.flattenObject(testJsonData);
 			const checkedKeys = new Set<string>();
 			const definedIdList = Array.from(definedIds);
+			const ignoreRowIdSet = this.buildIgnoreRowIdSet(options?.ignoreRowPropertyIds);
 
 			for (const key in flatData) {
 				if (key === 'frame') {
@@ -165,6 +177,11 @@ export class CodecValidator {
 					continue;
 				}
 
+				if (this.shouldSkipByRelatedAliasMap(key, definedIds, options?.relatedAliasMap)) {
+					stats.skippedRelatedCanonicalAlias++;
+					continue;
+				}
+
 				if (this.isRelatedCanonicalAliasField(key, definedIds)) {
 					stats.skippedRelatedCanonicalAlias++;
 					continue;
@@ -172,6 +189,11 @@ export class CodecValidator {
 
 				if (this.shouldSkipTemperatureUnitAliasField(key, wildcardKey, definedIds)) {
 					stats.skippedRelatedCanonicalAlias++;
+					continue;
+				}
+
+				if (this.shouldSkipByIgnoreRow(key, wildcardKey, ignoreRowIdSet)) {
+					stats.skippedIgnoreRow++;
 					continue;
 				}
 
@@ -217,6 +239,7 @@ export class CodecValidator {
 			skippedReserve: 0,
 			skippedRelatedTypeAlias: 0,
 			skippedRelatedCanonicalAlias: 0,
+			skippedIgnoreRow: 0,
 			errorReasonCount: {},
 		};
 	}
@@ -233,6 +256,74 @@ export class CodecValidator {
 			return false;
 		}
 		return definedIds.has(`${parentId}_types`);
+	}
+
+	private shouldSkipByRelatedAliasMap(
+		key: string,
+		definedIds: Set<string>,
+		relatedAliasMap?: Record<string, string>
+	): boolean {
+		if (!relatedAliasMap) {
+			return false;
+		}
+
+		const canonicalId = relatedAliasMap[key];
+		if (!canonicalId) {
+			return false;
+		}
+
+		return definedIds.has(canonicalId);
+	}
+
+	private buildIgnoreRowIdSet(ignoreRowPropertyIds?: string[]): Set<string> {
+		if (!ignoreRowPropertyIds || ignoreRowPropertyIds.length === 0) {
+			return new Set<string>();
+		}
+
+		return new Set(
+			ignoreRowPropertyIds
+				.map((id) => String(id || '').trim())
+				.filter(Boolean)
+		);
+	}
+
+	private shouldSkipByIgnoreRow(key: string, wildcardKey: string, ignoreRowIdSet: Set<string>): boolean {
+		if (ignoreRowIdSet.size === 0) {
+			return false;
+		}
+
+		return this.matchesIgnoreRowSet(key, ignoreRowIdSet) || this.matchesIgnoreRowSet(wildcardKey, ignoreRowIdSet);
+	}
+
+	private matchesIgnoreRowSet(fieldId: string, ignoreRowIdSet: Set<string>): boolean {
+		const normalizedFieldId = this.normalizeTemperatureUnitAlias(fieldId);
+		if (ignoreRowIdSet.has(fieldId) || ignoreRowIdSet.has(normalizedFieldId)) {
+			return true;
+		}
+
+		for (const ignoredId of ignoreRowIdSet) {
+			if (fieldId.startsWith(`${ignoredId}.`) || normalizedFieldId.startsWith(`${ignoredId}.`)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private normalizeTemperatureUnitAlias(fieldId: string): string {
+		const parts = fieldId.split('.');
+		if (parts.length === 0) {
+			return fieldId;
+		}
+
+		const leaf = parts[parts.length - 1];
+		const normalizedLeaf = this.stripTemperatureUnitPrefix(leaf);
+		if (normalizedLeaf === leaf) {
+			return fieldId;
+		}
+
+		parts[parts.length - 1] = normalizedLeaf;
+		return parts.join('.');
 	}
 
 	/**

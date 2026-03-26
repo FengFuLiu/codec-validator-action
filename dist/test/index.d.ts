@@ -10,7 +10,12 @@ interface TestDataValidationStats {
     skippedReserve: number;
     skippedRelatedTypeAlias: number;
     skippedRelatedCanonicalAlias: number;
+    skippedIgnoreRow: number;
     errorReasonCount: Record<string, number>;
+}
+export interface ValidateTestDataAgainstCodecOptions {
+    relatedAliasMap?: Record<string, string>;
+    ignoreRowPropertyIds?: string[];
 }
 export declare class CodecValidator {
     private lastTestDataValidationStats;
@@ -29,9 +34,10 @@ export declare class CodecValidator {
      * 验证测试数据中的字段ID是否在codec.json中定义
      * @param testJsonData 测试数据
      * @param codecJsonPath codec.json 文件路径
+     * @param options 可选校验参数
      * @returns 验证结果
      */
-    validateTestDataAgainstCodec(testJsonData: Record<string, any>, codecJsonPath: string): {
+    validateTestDataAgainstCodec(testJsonData: Record<string, any>, codecJsonPath: string, options?: ValidateTestDataAgainstCodecOptions): {
         valid: boolean;
         errors: string[];
     };
@@ -44,6 +50,11 @@ export declare class CodecValidator {
      * 识别 "xxx.type" 且 "xxx_types" 已存在的 related 去重场景
      */
     private isRelatedTypeAliasField;
+    private shouldSkipByRelatedAliasMap;
+    private buildIgnoreRowIdSet;
+    private shouldSkipByIgnoreRow;
+    private matchesIgnoreRowSet;
+    private normalizeTemperatureUnitAlias;
     /**
      * 识别 humidity/temperature/saltation 这类 leaf 字段被标准顶层字段覆盖的场景
      */

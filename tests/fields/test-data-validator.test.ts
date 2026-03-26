@@ -62,6 +62,151 @@ describe('CodecValidator.validateTestDataAgainstCodec', () => {
 		assert.equal(stats.errorCount, 0);
 	});
 
+	test('传入 relatedAliasMap 时命中映射应跳过且不报错', () => {
+		writeCodecJson(codecPath, ['voltage_three_phase_imbalcance']);
+
+		const result = validator.validateTestDataAgainstCodec(
+			{
+				voltage_unbalance_alarm: {
+					over_range_alarm_deactivation: { voltage_unbalance: 12.02 },
+					over_range_alarm_trigger: { voltage_unbalance: 98.06 },
+				},
+			},
+			codecPath,
+			{
+				relatedAliasMap: {
+					'voltage_unbalance_alarm.over_range_alarm_deactivation.voltage_unbalance': 'voltage_three_phase_imbalcance',
+					'voltage_unbalance_alarm.over_range_alarm_trigger.voltage_unbalance': 'voltage_three_phase_imbalcance',
+				},
+			}
+		);
+
+		const stats = validator.getLastTestDataValidationStats();
+		assert.equal(result.valid, true);
+		assert.deepEqual(result.errors, []);
+		assert.equal(stats.skippedRelatedCanonicalAlias, 2);
+		assert.equal(stats.errorCount, 0);
+	});
+
+	test('未传 options 时 relatedAliasMap 规则不生效（保持兼容旧行为）', () => {
+		writeCodecJson(codecPath, ['voltage_three_phase_imbalcance']);
+
+		const result = validator.validateTestDataAgainstCodec(
+			{
+				voltage_unbalance_alarm: {
+					over_range_alarm_deactivation: { voltage_unbalance: 12.02 },
+					over_range_alarm_trigger: { voltage_unbalance: 98.06 },
+				},
+			},
+			codecPath
+		);
+
+		const stats = validator.getLastTestDataValidationStats();
+		assert.equal(result.valid, false);
+		assert.equal(result.errors.length, 2);
+		assert.match(result.errors[0], /字段 "voltage_unbalance_alarm\.over_range_alarm_deactivation\.voltage_unbalance" 在 codec\.json 中未定义/);
+		assert.match(result.errors[1], /字段 "voltage_unbalance_alarm\.over_range_alarm_trigger\.voltage_unbalance" 在 codec\.json 中未定义/);
+		assert.equal(stats.skippedRelatedCanonicalAlias, 0);
+	});
+
+	test('relatedAliasMap 未命中时不应跳过字段', () => {
+		writeCodecJson(codecPath, ['voltage_three_phase_imbalcance']);
+
+		const result = validator.validateTestDataAgainstCodec(
+			{
+				current_alarm: {
+					info: {
+						over_range_alarm_trigger: { voltage_unbalance: 11.11 },
+					},
+				},
+			},
+			codecPath,
+			{
+				relatedAliasMap: {
+					'voltage_unbalance_alarm.over_range_alarm_trigger.voltage_unbalance': 'voltage_three_phase_imbalcance',
+				},
+			}
+		);
+
+		const stats = validator.getLastTestDataValidationStats();
+		assert.equal(result.valid, false);
+		assert.equal(result.errors.length, 1);
+		assert.match(result.errors[0], /字段 "current_alarm\.info\.over_range_alarm_trigger\.voltage_unbalance" 在 codec\.json 中未定义/);
+		assert.equal(stats.skippedRelatedCanonicalAlias, 0);
+	});
+
+	test('传入 ignoreRowPropertyIds 精确匹配时应跳过且不报错', () => {
+		writeCodecJson(codecPath, ['temperature']);
+
+		const result = validator.validateTestDataAgainstCodec(
+			{
+				custom_alarm: {
+					trigger: {
+						voltage_delta: 1,
+					},
+				},
+			},
+			codecPath,
+			{
+				ignoreRowPropertyIds: ['custom_alarm.trigger.voltage_delta'],
+			}
+		);
+
+		const stats = validator.getLastTestDataValidationStats();
+		assert.equal(result.valid, true);
+		assert.deepEqual(result.errors, []);
+		assert.equal(stats.skippedIgnoreRow, 1);
+		assert.equal(stats.errorCount, 0);
+	});
+
+	test('传入 ignoreRowPropertyIds 父路径匹配时应跳过且不报错', () => {
+		writeCodecJson(codecPath, ['temperature']);
+
+		const result = validator.validateTestDataAgainstCodec(
+			{
+				custom_alarm: {
+					trigger: {
+						voltage_delta: 1,
+					},
+				},
+			},
+			codecPath,
+			{
+				ignoreRowPropertyIds: ['custom_alarm.trigger'],
+			}
+		);
+
+		const stats = validator.getLastTestDataValidationStats();
+		assert.equal(result.valid, true);
+		assert.deepEqual(result.errors, []);
+		assert.equal(stats.skippedIgnoreRow, 1);
+		assert.equal(stats.errorCount, 0);
+	});
+
+	test('未命中 ignoreRowPropertyIds 时不应跳过字段', () => {
+		writeCodecJson(codecPath, ['temperature']);
+
+		const result = validator.validateTestDataAgainstCodec(
+			{
+				custom_alarm: {
+					trigger: {
+						voltage_delta: 1,
+					},
+				},
+			},
+			codecPath,
+			{
+				ignoreRowPropertyIds: ['other_alarm.trigger'],
+			}
+		);
+
+		const stats = validator.getLastTestDataValidationStats();
+		assert.equal(result.valid, false);
+		assert.equal(result.errors.length, 1);
+		assert.match(result.errors[0], /字段 "custom_alarm\.trigger\.voltage_delta" 在 codec\.json 中未定义/);
+		assert.equal(stats.skippedIgnoreRow, 0);
+	});
+
 	test('celsius_saltation 在基准字段被 related 去重时应通过 canonical 映射跳过', () => {
 		writeCodecJson(codecPath, ['temperature']);
 
