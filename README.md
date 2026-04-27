@@ -255,7 +255,7 @@ git push origin main
 | 组合 | 验证规则 |
 |------|----------|
 | `access_mode` + `bacnet_type` | R 只能用 input_object，W 只能用 output_object，RW 只能用 value_object |
-| `data_type` + `bacnet_type` | BOOL 用 binary_*，NUMBER 用 analog_*，ENUM 用 multistate_* |
+| `data_type` + `bacnet_type` | BOOL 用 binary_*，NUMBER 用 analog_*，ENUM 用 multistate_*，并按 R/W/RW 对应 input/output/value |
 | `data_type` + `value_type` | 数据类型与值类型兼容（如 BOOL 只能用 UINT8） |
 | 单位三元组 | unit、bacnet_unit_type_id、bacnet_unit_type 三者一致 |
 

@@ -90,13 +90,21 @@ describe('DataTypeValidator', () => {
 		});
 
 		describe('data_type = ENUM', () => {
-			test('允许使用 multistate_value_object', () => {
-				const item = createTestCodecObject({
-					data_type: 'ENUM',
-					bacnet_type: 'multistate_value_object',
+			const validBacnetTypes = [
+				'multistate_input_object',
+				'multistate_output_object',
+				'multistate_value_object',
+			];
+
+			validBacnetTypes.forEach((bacnetType) => {
+				test(`允许使用 ${bacnetType}`, () => {
+					const item = createTestCodecObject({
+						data_type: 'ENUM',
+						bacnet_type: bacnetType as any,
+					});
+					const result = DataTypeValidator.validateBacnetType(item);
+					assert.strictEqual(result.valid, true);
 				});
-				const result = DataTypeValidator.validateBacnetType(item);
-				assert.strictEqual(result.valid, true);
 			});
 
 			test('不允许使用 analog_input_object', () => {
@@ -280,9 +288,10 @@ describe('DataTypeValidator', () => {
 		test('运行模式配置（ENUM + UINT8）', () => {
 			const item = createTestCodecObject({
 				id: 'mode',
+				access_mode: 'R',
 				data_type: 'ENUM',
 				value_type: 'UINT8',
-				bacnet_type: 'multistate_value_object',
+				bacnet_type: 'multistate_input_object',
 			});
 
 			const result1 = DataTypeValidator.validateBacnetType(item);

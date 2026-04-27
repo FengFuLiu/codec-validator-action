@@ -57,7 +57,7 @@
                   "name": "Triggered"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS"
       },
@@ -1056,7 +1056,7 @@
                   "name": "Humidity Out of The High Range"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS",
           "reference": []
@@ -1176,7 +1176,7 @@
                   "name": "occuppied"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS"
       },
@@ -1393,7 +1393,7 @@
                   "name": "PM1.0 Threshold Alarm"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS",
           "reference": []
@@ -1630,7 +1630,7 @@
                   "name": "Threshold Alarm"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS",
           "reference": []
@@ -1867,7 +1867,7 @@
                   "name": "PM2.5 Threshold Alarm"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS",
           "reference": []
@@ -2206,7 +2206,7 @@
                   "name": "Triggered"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS"
       },
@@ -2228,7 +2228,7 @@
                   "name": "Triggered"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS",
           "reference": []
@@ -2581,7 +2581,7 @@
                   "name": "Burning Alarm"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS",
           "reference": []
@@ -3053,7 +3053,7 @@
                   "name": "Threshold Alarm"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS",
           "reference": []
@@ -3650,7 +3650,7 @@
                   "name": "Vaping Interference Alarm"
               }
           ],
-          "bacnet_type": "multistate_value_object",
+          "bacnet_type": "multistate_input_object",
           "bacnet_unit_type_id": 95,
           "bacnet_unit_type": "UNITS_NO_UNITS",
           "reference": []

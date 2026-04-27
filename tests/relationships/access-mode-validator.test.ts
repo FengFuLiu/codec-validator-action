@@ -27,10 +27,10 @@ describe('AccessModeValidator', () => {
 			assert.strictEqual(result.valid, true);
 		});
 
-		test('允许使用 multistate_value_object', () => {
+		test('允许使用 multistate_input_object', () => {
 			const item = createTestCodecObject({
 				access_mode: 'R',
-				bacnet_type: 'multistate_value_object',
+				bacnet_type: 'multistate_input_object',
 			});
 			const result = AccessModeValidator.validate(item);
 			assert.strictEqual(result.valid, true);
@@ -66,6 +66,15 @@ describe('AccessModeValidator', () => {
 			const result = AccessModeValidator.validate(item);
 			assert.strictEqual(result.valid, false);
 		});
+
+		test('不允许使用 multistate_value_object', () => {
+			const item = createTestCodecObject({
+				access_mode: 'R',
+				bacnet_type: 'multistate_value_object',
+			});
+			const result = AccessModeValidator.validate(item);
+			assert.strictEqual(result.valid, false);
+		});
 	});
 
 	describe('access_mode = W (只写)', () => {
@@ -87,10 +96,10 @@ describe('AccessModeValidator', () => {
 			assert.strictEqual(result.valid, true);
 		});
 
-		test('允许使用 multistate_value_object', () => {
+		test('允许使用 multistate_output_object', () => {
 			const item = createTestCodecObject({
 				access_mode: 'W',
-				bacnet_type: 'multistate_value_object',
+				bacnet_type: 'multistate_output_object',
 			});
 			const result = AccessModeValidator.validate(item);
 			assert.strictEqual(result.valid, true);
@@ -113,6 +122,15 @@ describe('AccessModeValidator', () => {
 			const item = createTestCodecObject({
 				access_mode: 'W',
 				bacnet_type: 'analog_value_object',
+			});
+			const result = AccessModeValidator.validate(item);
+			assert.strictEqual(result.valid, false);
+		});
+
+		test('不允许使用 multistate_value_object', () => {
+			const item = createTestCodecObject({
+				access_mode: 'W',
+				bacnet_type: 'multistate_value_object',
 			});
 			const result = AccessModeValidator.validate(item);
 			assert.strictEqual(result.valid, false);
@@ -160,6 +178,15 @@ describe('AccessModeValidator', () => {
 			const item = createTestCodecObject({
 				access_mode: 'RW',
 				bacnet_type: 'analog_output_object',
+			});
+			const result = AccessModeValidator.validate(item);
+			assert.strictEqual(result.valid, false);
+		});
+
+		test('不允许使用 multistate_input_object', () => {
+			const item = createTestCodecObject({
+				access_mode: 'RW',
+				bacnet_type: 'multistate_input_object',
 			});
 			const result = AccessModeValidator.validate(item);
 			assert.strictEqual(result.valid, false);

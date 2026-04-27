@@ -6,8 +6,8 @@
 export const ValidationRules = {
 	// access_mode 对应的有效 bacnet_type
 	accessModeRules: {
-		R: ['binary_input_object', 'analog_input_object', 'multistate_value_object', 'character_string_value_object'],
-		W: ['binary_output_object', 'analog_output_object', 'multistate_value_object', 'character_string_value_object'],
+		R: ['binary_input_object', 'analog_input_object', 'multistate_input_object', 'character_string_value_object'],
+		W: ['binary_output_object', 'analog_output_object', 'multistate_output_object', 'character_string_value_object'],
 		RW: ['binary_value_object', 'analog_value_object', 'multistate_value_object', 'character_string_value_object'],
 	},
 
@@ -15,7 +15,7 @@ export const ValidationRules = {
 	dataTypeBacnetRules: {
 		BOOL: ['binary_input_object', 'binary_output_object', 'binary_value_object'],
 		NUMBER: ['analog_input_object', 'analog_output_object', 'analog_value_object'],
-		ENUM: ['multistate_value_object'],
+		ENUM: ['multistate_input_object', 'multistate_output_object', 'multistate_value_object'],
 		STRING: ['character_string_value_object'],
 	},
 
