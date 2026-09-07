@@ -1006,7 +1006,7 @@
           "id": "fahrenheit_temperature",
           "name": "Fahrenheit Temperature",
           "value": "",
-          "unit": "℉",
+          "unit": "°F",
           "access_mode": "R",
           "data_type": "NUMBER",
           "value_type": "FLOAT",
@@ -2322,7 +2322,7 @@
           "id": "temperature_alarm_settings.fahrenheit_threshold_max",
           "name": "Fahrenheit Value B(Temperature Threshold Alarm)",
           "value": "32",
-          "unit": "℉",
+          "unit": "°F",
           "access_mode": "RW",
           "data_type": "NUMBER",
           "value_type": "FLOAT",
@@ -2343,7 +2343,7 @@
           "id": "temperature_alarm_settings.fahrenheit_threshold_min",
           "name": "Fahrenheit Value A(Temperature Threshold Alarm)",
           "value": "32",
-          "unit": "℉",
+          "unit": "°F",
           "access_mode": "RW",
           "data_type": "NUMBER",
           "value_type": "FLOAT",
@@ -2462,7 +2462,7 @@
           "id": "temperature_alarm.alarm_deactivation.fahrenheit_temperature",
           "name": "Fahrenheit Temperature(Threshold Alarm Release)",
           "value": "",
-          "unit": "℉",
+          "unit": "°F",
           "access_mode": "R",
           "data_type": "NUMBER",
           "value_type": "FLOAT",
@@ -2513,7 +2513,7 @@
           "id": "temperature_alarm.alarm_trigger.fahrenheit_temperature",
           "name": "Fahrenheit Temperature(Threshold Alarm)",
           "value": "",
-          "unit": "℉",
+          "unit": "°F",
           "access_mode": "R",
           "data_type": "NUMBER",
           "value_type": "FLOAT",
@@ -2653,7 +2653,7 @@
           "id": "temperature_calibration_settings.fahrenheit_calibration_value",
           "name": "Fahrenheit Calibration Value(Temperature Calibration Settings)",
           "value": "32",
-          "unit": "℉",
+          "unit": "°F",
           "access_mode": "RW",
           "data_type": "NUMBER",
           "value_type": "FLOAT",
@@ -2679,11 +2679,11 @@
           "values": [
               {
                   "value": 0,
-                  "name": "℃"
+                  "name": "°C"
               },
               {
                   "value": 1,
-                  "name": "℉"
+                  "name": "°F"
               }
           ],
           "bacnet_type": "multistate_value_object",

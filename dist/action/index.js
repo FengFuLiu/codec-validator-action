@@ -27714,7 +27714,7 @@ exports.bacnet_units_def = [
     { unit_type_id: 206, unit: 'mmWS', unit_type: 'UNITS_MILLIMETERS_OF_WATER' },
     { unit_type_id: 62, unit: '°C', unit_type: 'UNITS_DEGREES_CELSIUS' },
     { unit_type_id: 63, unit: 'K', unit_type: 'UNITS_DEGREES_KELVIN' },
-    { unit_type_id: 64, unit: '℉', unit_type: 'UNITS_DEGREES_FAHRENHEIT' },
+    { unit_type_id: 64, unit: '°F', unit_type: 'UNITS_DEGREES_FAHRENHEIT' },
     { unit_type_id: 65, unit: 'Degree-days-Celsius', unit_type: 'UNITS_DEGREE_DAYS_CELSIUS' },
     { unit_type_id: 66, unit: 'Degree-days-Fahrenheit', unit_type: 'UNITS_DEGREE_DAYS_FAHRENHEIT' },
     { unit_type_id: 120, unit: 'ΔT°F', unit_type: 'UNITS_DELTA_DEGREES_FAHRENHEIT' },
