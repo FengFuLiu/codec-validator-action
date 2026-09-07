@@ -13,7 +13,7 @@ class IdValidator {
      * 1. 必填
      * 2. 数据类型：string
      * 3. 数据范围：转换后字节长度为127以内
-     * 4. 数据格式：小写，单层级/多层级，目前不支持数组
+     * 4. 数据格式：小写，单层级/多层级，允许数字路径段作为数组下标（如 a.0.b）
      * 5. 不可重复
      *
      * @param item codec 对象
@@ -52,14 +52,6 @@ class IdValidator {
                 valid: false,
                 id,
                 message: `id 必须是小写格式: ${id}`,
-            };
-        }
-        // 4. 数据格式检查：不支持数组索引
-        if (/\.\d+\.|\.\d+$/.test(id)) {
-            return {
-                valid: false,
-                id,
-                message: `id 不支持数组格式（不能包含数字索引）: ${id}`,
             };
         }
         return { valid: true, id: null, message: null };

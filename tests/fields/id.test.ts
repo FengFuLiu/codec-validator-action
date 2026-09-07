@@ -112,20 +112,20 @@ describe('IdValidator', () => {
 		});
 	});
 
-	describe('格式验证 - 不支持数组索引', () => {
-		test('包含数字索引的 id 应失败', () => {
-			const invalidIds = [
+	describe('格式验证 - 数组索引', () => {
+		test('包含数字索引的 id 应通过', () => {
+			const indexedIds = [
 				'data.0.value', // 中间有数字索引
 				'data.0', // 末尾有数字索引
 				'sensor.1.temp',
 				'array.10.value',
+				'temperature_limit_task_settings.0.enable',
 			];
 
-			invalidIds.forEach((id) => {
+			indexedIds.forEach((id) => {
 				const item = createTestCodecObject({ id });
 				const result = IdValidator.validate(item);
-				assert.strictEqual(result.valid, false, `"${id}" should fail`);
-				assert.match(result.message!, /id 不支持数组格式/);
+				assert.strictEqual(result.valid, true, `"${id}" should pass`);
 			});
 		});
 
@@ -204,6 +204,9 @@ describe('IdValidator', () => {
 				'battery_voltage',
 				'data.sensor.temp',
 				'device.config.mode',
+				'data.0.value',
+				'sensor.1',
+				'temperature_limit_task_settings.0.enable',
 			];
 
 			validIds.forEach((id) => {
@@ -216,8 +219,7 @@ describe('IdValidator', () => {
 		test('常见的无效 id 格式', () => {
 			const testCases = [
 				{ id: 'Temperature', reason: '包含大写' },
-				{ id: 'data.0.value', reason: '数组索引' },
-				{ id: 'sensor.1', reason: '末尾数组索引' },
+				{ id: 'Device.Status', reason: '包含大写' },
 			];
 
 			testCases.forEach(({ id, reason }) => {
